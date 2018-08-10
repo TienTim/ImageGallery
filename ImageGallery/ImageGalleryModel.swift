@@ -10,15 +10,15 @@ import Foundation
 
 struct ImageGalleryModel {
     
-    static var gallery = [
-        "Food" : ["Apple", "Strawberry", "Kiwi"],
+    static var galleries = [
+        "Image Gallery" : ["Apple", "Strawberry", "Kiwi"],
         "Vehicle" : ["Car", "Plane", "Train"]
     ]
     
-    static var categories: [String] { return Array(gallery.keys) }
+    static var categories: [String] { return Array(galleries.keys) }
     
-    static var recentlyDeleted = Dictionary<String, [String]>()
-    static var categoriesOfTrash: [String] { return Array(recentlyDeleted.keys) }
+    static var deletedGalleries = Dictionary<String, [String]>()
+    static var deletedCategories: [String] { return Array(deletedGalleries.keys) }
     
     static let images = [
         "Apple" : "https://www.apple.com/ac/structured-data/images/knowledge_graph_logo.png?201606271147",
@@ -29,10 +29,10 @@ struct ImageGalleryModel {
         "Train" : "https://www.seat61.com/images/Aust-prospector-train-ext.jpg"
     ]
     
-    static func getCategory(of name: String) -> [URL] {
+    static func getGallery(of category: String) -> [URL] {
         var urls = [URL]()
-        if gallery.keys.contains(name) {
-            for imageName in gallery[name]! {
+        if galleries.keys.contains(category) {
+            for imageName in galleries[category]! {
                 if images.keys.contains(imageName) {
                     urls.append(URL(string: images[imageName]!)!)
                 }
@@ -41,30 +41,30 @@ struct ImageGalleryModel {
         return urls
     }
     
-    static func moveToTrash(_ categoryName: String) {
-        if let index = gallery.index(forKey: categoryName) {
-            let category = gallery.remove(at: index)
-            recentlyDeleted[category.key] = category.value
+    static func moveToTrash(_ category: String) {
+        if let index = galleries.index(forKey: category) {
+            let gallery = galleries.remove(at: index)
+            deletedGalleries[gallery.key] = gallery.value
         }
     }
     
-    static func delete(_ categoryName: String) {
-        if let index = recentlyDeleted.index(forKey: categoryName) {
-            recentlyDeleted.remove(at: index)
+    static func delete(_ category: String) {
+        if let index = deletedGalleries.index(forKey: category) {
+            deletedGalleries.remove(at: index)
         }
     }
     
-    static func recover(_ categoryName: String) {
-        if let index = recentlyDeleted.index(forKey: categoryName) {
-            let category = recentlyDeleted.remove(at: index)
-            gallery[category.key] = category.value
+    static func recover(_ category: String) {
+        if let index = deletedGalleries.index(forKey: category) {
+            let gallery = deletedGalleries.remove(at: index)
+            galleries[gallery.key] = gallery.value
         }
     }
     
-    static func changeName(_ categoryName: String, newName: String) {
-        if let index = gallery.index(forKey: categoryName) {
-            let category = gallery.remove(at: index)
-            gallery[newName] = category.value
+    static func changeName(_ category: String, newCategory: String) {
+        if let index = galleries.index(forKey: category) {
+            let gallery = galleries.remove(at: index)
+            galleries[newCategory] = gallery.value
         }
     }
     

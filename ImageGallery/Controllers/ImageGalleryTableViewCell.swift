@@ -28,7 +28,7 @@ class ImageGalleryTableViewCell: UITableViewCell, UITextFieldDelegate {
     }
     
     func textFieldDidEndEditing(_ textField: UITextField, reason: UITextFieldDidEndEditingReason) {
-        ImageGalleryModel.changeName(editCategoryName!, newName: textField.text!)
+        ImageGalleryModel.changeName(editCategoryName!, newCategory: textField.text!)
         nameTextField.isEnabled = false
     }
     

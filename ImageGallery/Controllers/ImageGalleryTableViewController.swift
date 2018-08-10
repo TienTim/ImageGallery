@@ -8,19 +8,11 @@
 
 import UIKit
 
+var defaults = UserDefaults.standard
+
 class ImageGalleryTableViewController: UITableViewController {
     
-    var imageURLs = [URL]()
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
-    }
+    var category = ""
 
     // MARK: - Table view data source
 
@@ -30,15 +22,15 @@ class ImageGalleryTableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 0 {
-            return ImageGalleryModel.gallery.count
+            return ImageGalleryModel.galleries.count
         } else {
-            return ImageGalleryModel.recentlyDeleted.count
+            return ImageGalleryModel.deletedGalleries.count
         }
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "TableCell", for: indexPath) as! ImageGalleryTableViewCell
-        cell.nameTextField.text = indexPath.section == 0 ? ImageGalleryModel.categories[indexPath.row] : ImageGalleryModel.categoriesOfTrash[indexPath.row]
+        cell.nameTextField.text = indexPath.section == 0 ? ImageGalleryModel.categories[indexPath.row] : ImageGalleryModel.deletedCategories[indexPath.row]
         return cell
     }
     
@@ -51,21 +43,26 @@ class ImageGalleryTableViewController: UITableViewController {
             if indexPath.section == 0 {
                 let categoryName = ImageGalleryModel.categories[indexPath.row]
                 ImageGalleryModel.moveToTrash(categoryName)
-                tableView.moveRow(at: indexPath, to: IndexPath(row: ImageGalleryModel.categoriesOfTrash.count - 1, section: 1))
+                tableView.performBatchUpdates({
+                    tableView.deleteRows(at: [indexPath], with: .fade)
+                    tableView.insertRows(at: [IndexPath(row: ImageGalleryModel.deletedCategories.count - 1, section: 1)], with: .none)
+                })
             } else {
-                let categoryName = ImageGalleryModel.categoriesOfTrash[indexPath.row]
+                let categoryName = ImageGalleryModel.deletedCategories[indexPath.row]
                 ImageGalleryModel.delete(categoryName)
                 tableView.deleteRows(at: [indexPath], with: .fade)
             }
         } else if editingStyle == .insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
+        }
     }
-    
+
+    // MARK: - Table view delegate
+
     override func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         if indexPath.section == 1 {
             let contextualAction = UIContextualAction(style: .normal, title: "Recover") { (action, self, true) in
-                let categoryName = ImageGalleryModel.categoriesOfTrash[indexPath.row]
+                let categoryName = ImageGalleryModel.deletedCategories[indexPath.row]
                 ImageGalleryModel.recover(categoryName)
                 tableView.reloadData()
             }
@@ -77,11 +74,15 @@ class ImageGalleryTableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        if indexPath.section == 0 {
-            let categoryName = ImageGalleryModel.categories[indexPath.row]
-            imageURLs = ImageGalleryModel.getCategory(of: categoryName)
-            performSegue(withIdentifier: "ShowCollectionView", sender: self)
+        if indexPath.section == 0,
+        let cell = tableView.cellForRow(at: indexPath) as? ImageGalleryTableViewCell {
+            category = ImageGalleryModel.categories[indexPath.row]
+            performSegue(withIdentifier: "ShowCollectionView", sender: cell)
         }
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 60
     }
 
     // MARK: - Navigation
@@ -92,10 +93,25 @@ class ImageGalleryTableViewController: UITableViewController {
                 let imageGalleryVC = nv.visibleViewController as? ImageGalleryViewController
             {
                 imageGalleryVC.tuples.removeAll()
+                imageGalleryVC.title = (sender as? ImageGalleryTableViewCell)?.nameTextField.text ?? ""
+                var defaultURLs = [URL]()
+                for urlString in imageGalleryVC.defaultURLs {
+                    defaultURLs.append(URL(string: urlString)!)
+                }
+                let imageURLs = defaultURLs + ImageGalleryModel.getGallery(of: category)
                 for imageURL in imageURLs {
                     imageGalleryVC.tuples.append((imageURL, 1.0))
                 }
             }
+        }
+    }
+    
+    //MARK: - View controller lifecycle
+    
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        if splitViewController?.preferredDisplayMode != .primaryOverlay {
+            splitViewController?.preferredDisplayMode = .primaryOverlay
         }
     }
 

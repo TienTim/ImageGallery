@@ -18,6 +18,15 @@ class ImageGalleryViewController: UIViewController, UICollectionViewDelegate, UI
     
     var tuples = [(imageURL: URL, imageRatio: CGFloat)]()
     
+    var defaultURLs: [String] {
+        get {
+            return defaults.array(forKey: self.title!) as? [String] ?? []
+        }
+        set {
+            defaults.set(newValue, forKey: self.title!)
+        }
+    }
+    
     var cellWidthScale: CGFloat = 1  {
         didSet {
             flowLayout?.invalidateLayout()
@@ -39,6 +48,7 @@ class ImageGalleryViewController: UIViewController, UICollectionViewDelegate, UI
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
         let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(adjustCellWidth(byHandlingGestureRecognizedBy:)))
         view.addGestureRecognizer(pinchGesture)
     }
@@ -143,6 +153,7 @@ class ImageGalleryViewController: UIViewController, UICollectionViewDelegate, UI
                     DispatchQueue.main.async {
                         if let url = provider as? URL {
                             let imageURL = url.imageURL
+                            self.defaultURLs.append(imageURL.absoluteString)
                             placeHolderContext.commitInsertion(dataSourceUpdates: { (insertionIndexPath) in
                                 self.tuples.insert((imageURL, ratio), at: insertionIndexPath.item)
                             })
@@ -160,6 +171,23 @@ class ImageGalleryViewController: UIViewController, UICollectionViewDelegate, UI
     
     func dropInteraction(_ interaction: UIDropInteraction, canHandle session: UIDropSession) -> Bool {
         return session.canLoadObjects(ofClass: NSURL.self) && session.canLoadObjects(ofClass: UIImage.self)
+    }
+    
+    //MARK: - Collection view delegate
+    
+    var url: URL?
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if let item = collectionView.cellForItem(at: indexPath) as? ImageGalleryCollectionViewCell {
+            url = item.url
+            performSegue(withIdentifier: "ShowImage", sender: item)
+        }
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let imageVC = segue.destination as? ImageViewController {
+            imageVC.imageURL = url!
+        }
     }
     
 }

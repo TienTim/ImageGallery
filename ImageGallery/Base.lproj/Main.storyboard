@@ -165,11 +165,47 @@
                     <connections>
                         <outlet property="collectionView" destination="Br5-gu-BPF" id="WbL-g1-7kN"/>
                         <outlet property="dropZone" destination="ezv-Qg-DfV" id="Bw6-VZ-qt7"/>
+                        <segue destination="FrK-bq-un2" kind="show" identifier="ShowImage" id="8dY-Zh-eIH"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="cms-x8-IKS" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="755" y="227"/>
+        </scene>
+        <!--Image View Controller-->
+        <scene sceneID="XcR-B6-3L8">
+            <objects>
+                <viewController id="FrK-bq-un2" customClass="ImageViewController" customModule="ImageGallery" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="FhK-MP-QLP">
+                        <rect key="frame" x="0.0" y="0.0" width="703.5" height="768"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bEh-VT-CxW">
+                                <rect key="frame" x="0.0" y="64" width="703.5" height="704"/>
+                            </scrollView>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="A7x-E7-Grh">
+                                <rect key="frame" x="341.5" y="406" width="20" height="20"/>
+                            </activityIndicatorView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="bEh-VT-CxW" firstAttribute="top" secondItem="jd6-Vy-SIb" secondAttribute="top" id="0g4-gP-eeF"/>
+                            <constraint firstItem="A7x-E7-Grh" firstAttribute="centerX" secondItem="jd6-Vy-SIb" secondAttribute="centerX" id="177-WV-ykF"/>
+                            <constraint firstItem="A7x-E7-Grh" firstAttribute="centerY" secondItem="jd6-Vy-SIb" secondAttribute="centerY" id="PFz-o4-5Lh"/>
+                            <constraint firstItem="jd6-Vy-SIb" firstAttribute="bottom" secondItem="bEh-VT-CxW" secondAttribute="bottom" id="Xfz-6f-5DO"/>
+                            <constraint firstItem="bEh-VT-CxW" firstAttribute="leading" secondItem="jd6-Vy-SIb" secondAttribute="leading" id="azw-zV-U4m"/>
+                            <constraint firstItem="jd6-Vy-SIb" firstAttribute="trailing" secondItem="bEh-VT-CxW" secondAttribute="trailing" id="qeQ-9d-Rzb"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="jd6-Vy-SIb"/>
+                    </view>
+                    <connections>
+                        <outlet property="scrollView" destination="bEh-VT-CxW" id="owo-tH-fCt"/>
+                        <outlet property="spinner" destination="A7x-E7-Grh" id="Bqh-oy-zsa"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="SBw-B9-iri" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1512" y="227"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="PaE-cB-zbJ">
@@ -209,6 +245,6 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="bSF-U6-gyq"/>
+        <segue reference="5o0-hP-LhC"/>
     </inferredMetricsTieBreakers>
 </document>

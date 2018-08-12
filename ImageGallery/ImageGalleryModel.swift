@@ -51,6 +51,7 @@ struct ImageGalleryModel {
     static func delete(_ category: String) {
         if let index = deletedGalleries.index(forKey: category) {
             deletedGalleries.remove(at: index)
+            defaults.removeObject(forKey: category)
         }
     }
     
@@ -65,6 +66,8 @@ struct ImageGalleryModel {
         if let index = galleries.index(forKey: category) {
             let gallery = galleries.remove(at: index)
             galleries[newCategory] = gallery.value
+            defaults.set(defaults.array(forKey: category), forKey: newCategory)
+            defaults.removeObject(forKey: category)
         }
     }
     
